@@ -82,6 +82,13 @@ if [[ "$CREATE_PROJ" != false ]]; then
 fi
 
 
+# /deployment.sh -c false -d false -p true -b eventstream-biometric-old -s eventstream-biometric-3732
+if [[ "$PROVISION_PROJ" != false ]]; then
+
+  gcloud config set project "${STREAM_PROJECT_ID}"
+  echo "current project switched to "
+  gcloud config get project
+
 # The service account running this build does not have permission to write logs. To fix this, grant the Logs Writer (roles/logging.logWriter) role to the service account.
 # set roles/logging.logWriter on project id service account - -compute@developer.gserviceaccount.com
 
@@ -89,12 +96,11 @@ fi
  echo "PROJECT_NUMBER: $PROJECT_NUMBER"
  SA_EMAIL=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
  echo "bind $SA_EMAIL"
- #gcloud organizations add-iam-policy-binding "${ORG_ID}" --member="serviceAccount:${SA_EMAIL}" --role=roles/logging.logWriter --condition=None --quiet
+ gcloud organizations add-iam-policy-binding "${ORG_ID}" --member="serviceAccount:${SA_EMAIL}" --role=roles/logging.logWriter --condition=None --quiet  > /dev/null 1>&1
  
- #echo "wait 60 sec"
- #sleep 60
-# /deployment.sh -c false -d false -p true -b eventstream-biometric-old -s eventstream-biometric-3732
-if [[ "$PROVISION_PROJ" != false ]]; then
+ echo "wait 60 sec"
+ sleep 60
+
 #cd main/java/functions
   echo "provisioning to ${STREAM_PROJECT_ID}"
   gcloud functions deploy ${HTTP_FUNCTION_NAME} \
